@@ -1,36 +1,33 @@
-import { useState } from "react"
+import { useState } from 'react';
+import TodoHeader from './components/TodoHeader';
+import TodoInput from "./components/TodoInput";
+import TodoList from "./components/TodoList";
 
 function fetchTodos() {
-  const result = [];
-  for (let i = 0; i < localStorage.length; i++) {
-    const value = localStorage.key(i);
-    result.push(value);
-  }
+    const result = [];
+    for (let i = 0; i < localStorage.length; i++) {
+        const value = localStorage.key(i);
+        result.push(value);
+    }
 
-  return result;
+    return result;
 }
 
+
 function App() {
-  const [inputText, setInputText] = useState('');
   const [todos, setTodos] = useState(fetchTodos());
 
-  const handleInput = (event) => {
-    const value = event.target.value;
-    setInputText(value)
+  const addTodo = (todo) => {
+    localStorage.setItem(todo, todo);
+    setTodos((currentTodos) => {
+      return [...currentTodos, todo]
+    })
   }
 
-  const handleClick = () => {
-    localStorage.setItem(inputText, inputText);
-    setTodos((currentTodos) => {
-      return [...currentTodos, inputText]
-    })
-    setInputText('');
-  }
-  
   const handleRemove = (todo) => {
     const result = todos.filter(todoItem => {
       if (todoItem !== todo) {
-        return true
+          return true
       }
     })
 
@@ -40,21 +37,9 @@ function App() {
 
   return (
     <div>
-      <h1>TODO 앱</h1>
-      <div>
-        <input type="text" value={inputText} onChange={handleInput} />
-        <button onClick={handleClick}>add</button>
-      </div>
-      <ul>
-        {todos.map((todo, index) => {
-          return (
-            <li key={index}>
-              <span>{todo}</span>
-              <button onClick={() => handleRemove(todo)}>remove</button>
-            </li>
-          )
-        })}
-      </ul>
+      <TodoHeader />
+      <TodoInput onTodoAdd={addTodo} />
+      <TodoList todos={todos} onTodoRemove={handleRemove} />
     </div>
   )
 }
